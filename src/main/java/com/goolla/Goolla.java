@@ -115,8 +115,6 @@ public class Goolla {
                 }
             };
         }
-
-
     }
 
     public static class AsyncApi extends API {
