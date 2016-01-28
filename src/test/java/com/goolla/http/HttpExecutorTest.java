@@ -29,13 +29,13 @@ public class HttpExecutorTest {
 
     @Test
     @Intermittent(repetition = 200)
-    public void test200IncorrectExecute() throws Exception {
+    public void test20IncorrectExecute() throws Exception {
         testSimpleIncorrectExecute();
     }
 
     @Test
     @Intermittent(repetition = 200)
-    public void test200CorrectExecute() throws Exception {
+    public void test20CorrectExecute() throws Exception {
         testSimpleCorrectExecute();
     }
 
@@ -48,11 +48,12 @@ public class HttpExecutorTest {
             public void onComplete(ResultObject value) {
                 latch.countDown();
                 isComplete[0] = true;
-                System.out.println(value);
+//                System.out.println(value);
             }
 
             @Override
             public void onError(Throwable throwable) {
+                System.out.println(throwable);
                 latch.countDown();
                 isComplete[0] = false;
             }

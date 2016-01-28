@@ -8,11 +8,6 @@ import com.goolla.http.HttpExecutor;
  */
 public class TestHttpApi extends BaseHttpApi {
     public TestHttpApi(String key) {
-        super(key);
-    }
-
-    @Override
-    protected HttpExecutor lookUpExecutor() {
-        return new HttpExecutor();
+        super(key, new HttpExecutor());
     }
 }

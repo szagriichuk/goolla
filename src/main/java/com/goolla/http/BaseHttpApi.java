@@ -23,10 +23,11 @@ import static com.goolla.http.HttpMethod.*;
  */
 public abstract class BaseHttpApi extends Key {
     private static final Logger LOG = LoggerFactory.getLogger(BaseHttpApi.class);
-    private HttpExecutor executor = lookUpExecutor();
+    private HttpExecutor executor;
 
-    public BaseHttpApi(String key) {
+    public BaseHttpApi(String key, HttpExecutor executor) {
         super(key);
+        this.executor = executor;
     }
 
     public void post(String url, ResponseCallback callBack, Param<?> params) {
@@ -50,9 +51,7 @@ public abstract class BaseHttpApi extends Key {
     }
 
 
-    protected abstract HttpExecutor lookUpExecutor();
-
-    private String createRequestString(String delim, Param<?>... params) {
+    protected String createRequestString(String delim, Param<?>... params) {
         if (params == null || params.length == 0)
             return "";
 
@@ -65,7 +64,7 @@ public abstract class BaseHttpApi extends Key {
     }
 
 
-    private HttpEntityEnclosingRequestBase createPostRequest(String postData, String url) {
+    protected HttpEntityEnclosingRequestBase createPostRequest(String postData, String url) {
         HttpEntityEnclosingRequestBase post = (HttpEntityEnclosingRequestBase) POST.create(url);
         HttpEntity entity = createHttpEntity(postData);
         if (entity != null) {
@@ -74,11 +73,11 @@ public abstract class BaseHttpApi extends Key {
         return post;
     }
 
-    private HttpRequestBase createDeleteRequest(String url) {
+    protected HttpRequestBase createDeleteRequest(String url) {
         return DELETE.create(url);
     }
 
-    private HttpEntityEnclosingRequestBase createPutRequest(String postData, String url) {
+    protected HttpEntityEnclosingRequestBase createPutRequest(String postData, String url) {
         HttpEntityEnclosingRequestBase post = (HttpEntityEnclosingRequestBase) HttpMethod.PUT.create(url);
         HttpEntity entity = createHttpEntity(postData);
         if (entity != null) {
@@ -87,7 +86,7 @@ public abstract class BaseHttpApi extends Key {
         return post;
     }
 
-    private HttpRequestBase createGetRequestWithHeader(String url, List<Header> headers) {
+    protected HttpRequestBase createGetRequestWithHeader(String url, List<Header> headers) {
         HttpRequestBase requestBase = GET.create(url);
         addHeaders(headers, requestBase);
         return requestBase;
@@ -112,7 +111,11 @@ public abstract class BaseHttpApi extends Key {
         return url + paramsValues;
     }
 
-    private String createHttpEntityData(Param<?> params) {
+    protected String createHttpEntityData(Param<?> params) {
         return Serializer.serialize(params);
+    }
+
+    public HttpExecutor getExecutor() {
+        return executor;
     }
 }

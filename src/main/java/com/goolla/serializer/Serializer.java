@@ -1,7 +1,10 @@
 package com.goolla.serializer;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.IOException;
 
@@ -9,7 +12,13 @@ import java.io.IOException;
  * @author szagriichuk.
  */
 public class Serializer {
-    private static ObjectMapper mapper = new ObjectMapper();
+    public static ObjectMapper mapper = new ObjectMapper();
+
+    static {
+        mapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true).
+                configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false).
+                configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    }
 
     public static <T> T deserialize(String data, Class<T> clazz) {
         try {

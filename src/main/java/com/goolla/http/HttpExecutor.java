@@ -5,8 +5,10 @@ import com.goolla.http.callback.objects.ResultObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.util.EntityUtils;
@@ -21,9 +23,28 @@ import java.io.IOException;
 public class HttpExecutor {
 
     public void execute(HttpRequestBase method, final ResponseCallback callback) {
-        final CloseableHttpAsyncClient httpAsyncClient = HttpAsyncClients.createDefault();
+        execute(method, null, callback);
+    }
+
+    public void execute(HttpRequestBase method, CredentialsProvider credentialsProvider, final ResponseCallback callback) {
+        final CloseableHttpAsyncClient httpAsyncClient;
+        httpAsyncClient = createAndStartHttpClient(credentialsProvider);
+        httpAsyncClient.execute(method, createFutureCallback(callback, httpAsyncClient));
+    }
+
+    private CloseableHttpAsyncClient createAndStartHttpClient(CredentialsProvider credentialsProvider) {
+        CloseableHttpAsyncClient httpAsyncClient;
+        if (credentialsProvider != null) {
+            httpAsyncClient = HttpAsyncClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
+        } else {
+            httpAsyncClient = HttpAsyncClients.createDefault();
+        }
         httpAsyncClient.start();
-        httpAsyncClient.execute(method, new FutureCallback<HttpResponse>() {
+        return httpAsyncClient;
+    }
+
+    private FutureCallback<HttpResponse> createFutureCallback(final ResponseCallback callback, final CloseableHttpAsyncClient httpAsyncClient) {
+        return new FutureCallback<HttpResponse>() {
             @Override
             public void completed(HttpResponse result) {
                 checkIfStatusIsSuccess(result);
@@ -68,7 +89,7 @@ public class HttpExecutor {
             public void cancelled() {
                 failed(new HttpException("The operation was canceled."));
             }
-        });
+        };
     }
 
     private void close(CloseableHttpAsyncClient httpAsyncClient, ResponseCallback callback) {
