@@ -42,6 +42,10 @@ public abstract class BaseHttpApi extends Key {
         executor.execute(createGetRequestWithHeader(createUrlWithParams(url + "?", createRequestString("&", params)), headers), callBack);
     }
 
+    public void get(String url, ResponseCallback callBack, String field) {
+        executor.execute(createGetRequestWithHeader(createUrlWithParams(url + "/",field), Headers.create()), callBack);
+    }
+
     public void get(String url, ResponseCallback callBack, Param<?>... params) {
         executor.execute(createGetRequestWithHeader(createUrlWithParams(url + "?", createRequestString("&", params)), Headers.create()), callBack);
     }

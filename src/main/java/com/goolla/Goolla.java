@@ -78,6 +78,15 @@ public class Goolla {
             });
         }
 
+        public ResultObject get(final String url, final String param) {
+            return execute(new Func() {
+                @Override
+                public void apply(CountDownLatch latch, ResultObject[] objects) {
+                    httpApi.get(url, createCallBack(latch, objects), param);
+                }
+            });
+        }
+
         public ResultObject delete(final String url, final Param<?>... params) {
             return execute(new Func() {
                 @Override
@@ -136,6 +145,10 @@ public class Goolla {
 
         public void get(String url, ResponseCallback callBack, Param<?>... params) {
             httpApi.get(url, callBack, params);
+        }
+
+        public void get(String url, ResponseCallback callBack, String param) {
+            httpApi.get(url, callBack, param);
         }
 
         public void delete(String url, ResponseCallback callBack, Param<?>... params) {
