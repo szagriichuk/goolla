@@ -8,7 +8,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.util.EntityUtils;
@@ -47,7 +46,8 @@ public class HttpExecutor {
         return new FutureCallback<HttpResponse>() {
             @Override
             public void completed(HttpResponse result) {
-                checkIfStatusIsSuccess(result);
+                if(!checkIfStatusIsSuccess(result))
+                    return;
                 HttpEntity entity = null;
                 try {
                     entity = result.getEntity();
@@ -74,9 +74,12 @@ public class HttpExecutor {
                 }
             }
 
-            private void checkIfStatusIsSuccess(HttpResponse result) {
-                if (result.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+            private boolean checkIfStatusIsSuccess(HttpResponse result) {
+                if (result.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
                     failed(new HttpException(result.getStatusLine().getReasonPhrase()));
+                    return false;
+                }
+                return true;
             }
 
             @Override
