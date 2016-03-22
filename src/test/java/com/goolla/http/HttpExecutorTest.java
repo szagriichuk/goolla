@@ -39,26 +39,28 @@ public class HttpExecutorTest {
         testSimpleCorrectExecute();
     }
 
-    private boolean executeHttpRequest(String url) throws InterruptedException {
+    private boolean executeHttpRequest(String url) {
         final CountDownLatch latch = new CountDownLatch(1);
         final boolean[] isComplete = {false};
         HttpExecutor executor = new HttpExecutor();
         executor.execute(new HttpGet(url), new ResponseCallback() {
             @Override
             public void onComplete(ResultObject value) {
-                latch.countDown();
                 isComplete[0] = true;
-//                System.out.println(value);
+                latch.countDown();
             }
 
             @Override
             public void onError(Throwable throwable) {
-                System.out.println(throwable);
-                latch.countDown();
                 isComplete[0] = false;
+                latch.countDown();
             }
         });
-        latch.await();
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return isComplete[0];
     }
 
