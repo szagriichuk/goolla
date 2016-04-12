@@ -13,6 +13,8 @@ import org.apache.http.impl.nio.client.HttpAsyncClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Http method executor.
@@ -20,9 +22,19 @@ import java.io.IOException;
  * @author szagriichuk.
  */
 public class HttpExecutor {
+    private static List<Integer> OK_STATUSES = new ArrayList<Integer>(){{
+        add(HttpStatus.SC_OK);
+        add(HttpStatus.SC_ACCEPTED);
+        add(HttpStatus.SC_CREATED);
+        add(HttpStatus.SC_NON_AUTHORITATIVE_INFORMATION);
+        add(HttpStatus.SC_NO_CONTENT);
+        add(HttpStatus.SC_RESET_CONTENT);
+        add(HttpStatus.SC_PARTIAL_CONTENT);
+        add(HttpStatus.SC_MULTI_STATUS);
+    }};
 
     public void execute(HttpRequestBase method, final ResponseCallback callback) {
-        execute(method, null, callback);
+            execute(method, null, callback);
     }
 
     public void execute(HttpRequestBase method, CredentialsProvider credentialsProvider, final ResponseCallback callback) {
@@ -75,7 +87,7 @@ public class HttpExecutor {
             }
 
             private boolean checkIfStatusIsSuccess(HttpResponse result) {
-                if (result.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                if (!OK_STATUSES.contains(result.getStatusLine().getStatusCode())) {
                     failed(new HttpException(result.getStatusLine().getReasonPhrase()));
                     return false;
                 }

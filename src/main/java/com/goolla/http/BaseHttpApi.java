@@ -102,7 +102,7 @@ public abstract class BaseHttpApi extends Key {
         }
     }
 
-    private HttpEntity createHttpEntity(String data) {
+    protected HttpEntity createHttpEntity(String data) {
         try {
             return new NStringEntity(data);
         } catch (UnsupportedEncodingException e) {
